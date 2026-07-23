@@ -1,0 +1,19 @@
+{
+  "name": "kai-local-assistant",
+  "version": "0.1.0",
+  "private": true,
+  "description": "K.A.I. HUD con puente local Node para acciones reales permitidas.",
+  "scripts": {
+    "start": "node kai-browser.js",
+    "electron": "electron .",
+    "desktop": "electron .",
+    "bridge": "node kai-bridge.js",
+    "web": "node kai-bridge.js",
+    "browser": "node kai-browser.js"
+  },
+  "devDependencies": {
+    "electron": "^43.2.0"
+  },
+  "main": "electron-main.js"
+}
+

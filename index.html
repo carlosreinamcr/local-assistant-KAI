@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>K.A.I. Command Interface</title>
+    <meta name="description" content="Interfaz K.A.I. futurista en JavaScript con voz, HUD, datos reales y acciones locales.">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <canvas id="hudCanvas" aria-hidden="true"></canvas>
+
+    <main class="app-shell">
+      <header class="topbar">
+        <div class="brand-block">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <div>
+            <p class="eyebrow">Sistema cognitivo local</p>
+            <h1>K.A.I.</h1>
+          </div>
+        </div>
+
+        <div class="top-actions">
+          <button id="menuToggle" class="menu-toggle" type="button" aria-expanded="false" aria-controls="jarvisMenu">MENU</button>
+          <nav class="mode-tabs" aria-label="Modos de interfaz">
+            <button class="tab-button is-active" data-mode="command">CMD</button>
+            <button class="tab-button" data-mode="focus">FOCUS</button>
+            <button class="tab-button" data-mode="scan">SCAN</button>
+          </nav>
+        </div>
+
+        <div class="screen-dock" aria-label="Pantallas externas">
+          <button id="openPanelsButton" class="dock-button" title="Abrir pantallas HUD" aria-label="Abrir pantallas HUD">MULTI</button>
+          <button class="dock-button" data-panel="dashboard" title="Dashboard externo" aria-label="Dashboard externo">DASH</button>
+          <button class="dock-button" data-panel="mission" title="Mision externa" aria-label="Mision externa">MISS</button>
+          <button class="dock-button" data-panel="log" title="Bitacora externa" aria-label="Bitacora externa">LOG</button>
+          <button id="fullscreenButton" class="dock-button" title="Pantalla completa" aria-label="Pantalla completa">FULL</button>
+        </div>
+
+        <div class="clock-card" aria-live="polite">
+          <span id="clockTime">00:00</span>
+          <small id="clockDate">Inicializando</small>
+        </div>
+      </header>
+
+      <section id="jarvisMenu" class="panel-menu" aria-label="Menu de paneles K.A.I." aria-hidden="true">
+        <aside class="side-column left-column" aria-label="Estado del sistema">
+          <section class="hud-panel system-card">
+            <div class="panel-heading">
+              <span>Estado neural</span>
+              <strong id="statusLabel">ONLINE</strong>
+            </div>
+            <div class="metric-list">
+              <div class="metric-row">
+                <span>Cognicion</span>
+                <meter id="cognitionMeter" min="0" max="100" value="86"></meter>
+              </div>
+              <div class="metric-row">
+                <span>Energia</span>
+                <meter id="energyMeter" min="0" max="100" value="72"></meter>
+              </div>
+              <div class="metric-row">
+                <span>Enfoque</span>
+                <meter id="focusMeter" min="0" max="100" value="64"></meter>
+              </div>
+            </div>
+          </section>
+
+          <section class="hud-panel compact-panel">
+            <div class="panel-heading">
+              <span>Acciones rapidas</span>
+              <strong>12 reales</strong>
+            </div>
+            <div class="module-grid">
+              <button class="module-chip is-hot" data-command="diagnostico">AI</button>
+              <button class="module-chip" data-command="hora">TIME</button>
+              <button class="module-chip" data-command="sistema">SYS</button>
+              <button class="module-chip" data-command="internet">NET</button>
+              <button class="module-chip" data-command="clima">WX</button>
+              <button class="module-chip" data-command="wiki inteligencia artificial">WIKI</button>
+              <button class="module-chip" data-command="leer archivo">FILE</button>
+              <button class="module-chip" data-command="notas">NOTE</button>
+              <button class="module-chip" data-command="tareas">TASK</button>
+              <button class="module-chip" data-command="temporizador 1 minuto">TMR</button>
+              <button class="module-chip" data-command="modo escaneo">SCAN</button>
+              <button class="module-chip" data-command="limpiar">CLR</button>
+            </div>
+          </section>
+
+          <section class="hud-panel live-dashboard">
+            <div class="panel-heading">
+              <span>Dashboard vivo</span>
+              <strong id="aiState">AI OFF</strong>
+            </div>
+            <div id="liveDashboard" class="dashboard-grid">
+              <div><span>Notas</span><strong>0</strong></div>
+              <div><span>Tareas</span><strong>0</strong></div>
+              <div><span>Misiones</span><strong>0</strong></div>
+              <div><span>IA</span><strong>Local</strong></div>
+            </div>
+          </section>
+
+          <section class="hud-panel data-stream">
+            <div class="panel-heading">
+              <span>Flujo de sensores</span>
+              <strong id="packetRate">42 ms</strong>
+            </div>
+            <ul id="sensorFeed" class="sensor-feed" aria-live="polite"></ul>
+          </section>
+        </aside>
+
+        <aside class="side-column right-column" aria-label="Mision y actividad">
+          <section class="hud-panel mission-panel">
+            <div class="panel-heading">
+              <span>Mision actual</span>
+              <strong id="missionState">STANDBY</strong>
+            </div>
+            <ol class="mission-list">
+              <li><span></span>Escuchar comando</li>
+              <li><span></span>Analizar intencion</li>
+              <li><span></span>Ejecutar respuesta</li>
+            </ol>
+          </section>
+
+          <section class="hud-panel command-panel">
+            <div class="panel-heading">
+              <span>Consola</span>
+              <strong id="listeningState">MANUAL</strong>
+            </div>
+            <div class="command-input-row">
+              <input id="commandInput" type="text" autocomplete="off" placeholder="Prueba: clima Bogota, wiki Tesla, calcula 18*7, nota guardar...">
+              <button id="sendCommand" class="icon-button" title="Enviar comando" aria-label="Enviar comando">GO</button>
+            </div>
+            <div class="voice-controls">
+              <button id="voiceButton" class="primary-action">Voz</button>
+              <button id="muteButton" class="ghost-action" aria-pressed="false">Audio</button>
+            </div>
+            <input id="fileInput" class="hidden-file" type="file" accept=".txt,.md,.csv,.json,.html,.css,.js,.log">
+          </section>
+
+          <section class="hud-panel ai-panel">
+            <div class="panel-heading">
+              <span>Nucleo IA</span>
+              <strong id="aiConfigState">LOCAL</strong>
+            </div>
+            <div class="ai-config-row">
+              <input id="apiKeyInput" type="password" autocomplete="off" placeholder="Gemini API key opcional">
+              <button id="saveApiKey" class="icon-button" title="Guardar API key" aria-label="Guardar API key">KEY</button>
+            </div>
+            <div class="ai-config-row">
+              <input id="aiModelInput" type="text" autocomplete="off" value="gemini-3.6-flash" aria-label="Modelo Gemini">
+              <button id="testAI" class="icon-button" title="Probar IA" aria-label="Probar IA">TEST</button>
+            </div>
+          </section>
+
+          <section class="hud-panel result-panel">
+            <div class="panel-heading">
+              <span>Resultado</span>
+              <strong id="resultState">READY</strong>
+            </div>
+            <div id="resultPanel" class="result-content">
+              Pideme datos reales: clima, sistema, internet, wiki, calcular, abrir sitios, notas, tareas, temporizadores o analizar un archivo.
+            </div>
+          </section>
+
+          <section class="hud-panel log-panel">
+            <div class="panel-heading">
+              <span>Bitacora</span>
+              <strong id="logCount">0</strong>
+            </div>
+            <div id="terminalLog" class="terminal-log" aria-live="polite"></div>
+          </section>
+        </aside>
+      </section>
+
+      <section class="workspace" aria-label="Panel principal K.A.I.">
+        <section class="core-stage" aria-label="Nucleo visual de K.A.I.">
+          <div class="target-reticle" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <div class="orb-wrap">
+            <div class="orb-shell">
+              <div class="orb-ring ring-one"></div>
+              <div class="orb-ring ring-two"></div>
+              <div class="orb-ring ring-three"></div>
+              <div class="energy-core" id="energyCore">
+                <span class="core-pulse"></span>
+                <span class="core-grid"></span>
+              </div>
+            </div>
+          </div>
+          <div class="wave-stack" id="waveStack" aria-hidden="true"></div>
+          <div class="primary-console" aria-label="Consola principal K.A.I.">
+            <label for="primaryCommand">Orden directa a K.A.I.</label>
+            <div class="primary-command-row">
+              <textarea id="primaryCommand" rows="2" autocomplete="off" placeholder="Escribe aqui: crea una carpeta en mi escritorio llamada demo y abre VS Code..."></textarea>
+              <div class="primary-command-actions">
+                <button id="primaryExecute" class="primary-action">Ejecutar</button>
+                <button id="primaryVoice" class="ghost-action">Voz</button>
+              </div>
+            </div>
+          </div>
+          <p class="core-caption" id="coreCaption">Listo para recibir instrucciones.</p>
+        </section>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+    <script src="actions.js"></script>
+    <script src="kai-ai.js"></script>
+    <script src="kai-windows.js"></script>
+    <script src="bridge-client.js"></script>
+  </body>
+</html>
+
+

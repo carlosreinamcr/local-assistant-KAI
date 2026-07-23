@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>K.A.I. External Panel</title>
+    <meta name="description" content="Panel externo sincronizado para K.A.I.">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body class="panel-body">
+    <canvas id="panelCanvas" aria-hidden="true"></canvas>
+
+    <main class="external-shell">
+      <header class="external-topbar">
+        <div>
+          <p class="eyebrow">Interfaz satelite</p>
+          <h1 id="panelTitle">K.A.I.</h1>
+        </div>
+        <strong id="panelStatus">SYNC</strong>
+      </header>
+
+      <nav class="external-tabs" aria-label="Cambiar panel externo">
+        <button data-view="dashboard">DASH</button>
+        <button data-view="mission">MISS</button>
+        <button data-view="log">LOG</button>
+        <button data-view="data">DATA</button>
+      </nav>
+
+      <section class="external-stage">
+        <div class="external-radar" aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <div id="panelContent" class="external-content"></div>
+      </section>
+    </main>
+
+    <script src="panel.js"></script>
+  </body>
+</html>
+
+
